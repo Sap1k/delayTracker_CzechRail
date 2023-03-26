@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    font-family: Arial, Ubuntu, sans-serif;
+}
+
+.navhelper {
+    color: rgb(255,255,255);
+    background: var(--bs-dark);
+    margin-bottom: 10px;
+}
+
+.train_name {
+    font-weight: bold;
+    color: darkslategray;
+}
