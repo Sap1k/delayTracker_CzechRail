@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>DelayTracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ps-1 pe-1">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">DelayTracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Přehled zpoždění</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/historie">Historické zpoždění</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <form class="container-fluid ps-3 row pt-2" method="get" action="/historie">
+        <div class="mb-3 col-auto">
+            <label for="train_num" class="form-label">Číslo vlaku</label>
+            <input type="text" class="form-control" id="train_num" name="train_num" value="{{ form_data[0] }}" aria-describedby="trainHelp">
+            <div id="trainHelp" class="form-text">Zadávejte číslo bez prefixů (Os, R...)</div>
+        </div>
+        <div class="mb-3 col-auto">
+            <label for="date_from" class="form-label">Od</label>
+            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ form_data[1] }}">
+        </div>
+        <div class="mb-3 col-auto">
+            <label for="date_from" class="form-label">Do</label>
+            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ form_data[2] }}">
+        </div>
+        <div class="mb-3 col-auto align-self-center">
+            <button type="submit" class="btn btn-primary">Zobrazit historii zpoždění</button>
+        </div>
+            {% if error != '' %}
+                <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-start align-items-start w-100">
+                    <div class="toast bg-danger-subtle" role="alert" aria-live="assertive" aria-atomic="true" id="error">
+                        <div class="toast-header">
+                            <strong class="me-auto">Chyba!</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{ error }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+    </form>
+
+    {% block result %}
+    {% endblock %}
+
+    <!-- DataTables -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/static/js/datatable.js"></script>
+    <script src="/static/js/toast.js"></script>
+</body>

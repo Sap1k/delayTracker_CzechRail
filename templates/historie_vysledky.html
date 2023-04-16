@@ -1,0 +1,41 @@
+{% extends 'historie.html' %}
+{% block result %}
+    {% if train_info is defined and train_info|length > 0 %}
+        {% set train_carrier = train_info[0][3].split(',') %}
+        <div class="ps-3 pt-3 pe-3 mb-3 col-auto">
+            <h3 class="text-primary fw-bold">{{ train_carrier[0] }}</h3>
+            <h4 class="text-info">Pravidelný příjezd: {{ train_datetimes[0].strftime('%H:%M') }}</h4>
+            <h5 class="text-secondary fw-light">&gt;&gt; ze směru {{ train_info[0][4] }}</h5>
+            <p class="text-secondary fw-light">Dopravce: {{ train_carrier[1] }}</p>
+        </div>
+    {% endif %}
+    <div class="container-fluid overflow-auto ps-3 pb-3 pe-3">
+        <div class="col-auto mb-3">
+            <table id="trains" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Skutečný příjezd</th>
+                        <th>Zpoždění</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for train in train_info %}
+                    {% if train[5] < 5 %}
+                        {% set trclass = '' %}
+                    {% elif train[5] < 10 %}
+                        {% set trclass = 'table-warning' %}
+                    {% else %}
+                        {% set trclass = 'table-danger' %}
+                    {% endif %}
+                    <tr class="{{ trclass }}">
+                        <td>{{ train_datetimes[loop.index0].strftime('%d.%m.') }}</td>
+                        <td>{{ real_arrivals[loop.index0] }}</td>
+                        <td>{{ train[5] }} minut</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -104,6 +104,16 @@ app.jinja_env.lstrip_blocks = True
 app.jinja_env.trim_blocks = True
 
 
+# Add a function to calculate real arrival time based on planned arrival and delay
+def calculate_arrival(query_res):
+    real_arrivals = list()
+    for arrival in query_res:
+        planned_arrival = datetime.strptime(arrival[6], '%Y-%m-%d %H:%M:%S')
+        real_arrival = planned_arrival + timedelta(minutes=arrival[5])
+        real_arrivals.append(datetime.strftime(real_arrival, '%H:%M'))
+    return real_arrivals
+
+
 @app.route('/')
 def view_delays():
     # Get data from form on main site
@@ -111,7 +121,7 @@ def view_delays():
     time = request.args.get('time')
 
     # If no datetime has been selected, show the last 5 departures
-    if (date is None and time is None) or (date == '' or time == ''):
+    if any(val is None or val == "" for val in [date, time]):
         c.execute('SELECT * FROM zpozdeni ORDER BY id DESC LIMIT 5')
     else:
         datetime_db = f"{date} {time}:00"
@@ -119,17 +129,52 @@ def view_delays():
     last_delays = c.fetchall()
 
     # Calculate actual arrival based on planned arrival and delay
-    real_arrivals = list()
-    for arrival in last_delays:
-        planned_arrival = datetime.strptime(arrival[6], '%Y-%m-%d %H:%M:%S')
-        real_arrival = planned_arrival + timedelta(minutes=arrival[5])
-        real_arrivals.append(datetime.strftime(real_arrival, '%H:%M'))
-
+    real_arrivals = calculate_arrival(last_delays)
 
     # Send data to jinja, and by extension the user
     resp = make_response(render_template('main.html', trains=last_delays, datetime=[date, time],
                                          real_arrivals=real_arrivals))
     return resp
+
+
+@app.route('/historie')
+def view_history():
+    # Get data from form on history site (or referral from main)
+    train_num = request.args.get('train_num')
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+
+    if any(val is None or val == "" for val in [date_from, date_to]):
+        # Preset last 2 weeks as default
+        cur_date = datetime.now()
+        date_to = cur_date.strftime('%Y-%m-%d')
+        date_from = (cur_date - timedelta(days=14)).strftime('%Y-%m-%d')
+
+    if train_num is None or train_num == "":
+        # Return an empty form with prefilled dates
+        return render_template('historie.html', error='', form_data=['', date_from, date_to])
+    # If train number is not numeric, call a popup to tell the user
+    elif train_num.isnumeric() is False:
+        error = "Zadané číslo vlaku není číslo, zkontrolujte zda Vámi zadaná hodnota neobsahuje písmena!"
+        return render_template('historie.html', error=error, form_data=[train_num, date_from, date_to])
+    # User input is valid, fetch data from db and send it to Jinja
+    else:
+        c.execute('SELECT * FROM zpozdeni WHERE train_num = ? AND inserted BETWEEN ? AND ? ORDER BY id DESC',
+                  [train_num, date_from, f"{date_to} 23:59:59"])
+        train_info = c.fetchall()
+
+        # Calculate actual arrival based on planned arrival and delay
+        real_arrivals = calculate_arrival(train_info)
+
+        # Convert strings into datetime objects for later formatting
+        train_datetimes = list()
+        for train in train_info:
+            train_datetime = datetime.strptime(train[6], '%Y-%m-%d %H:%M:%S')
+            train_datetimes.append(train_datetime)
+
+        # Send data to Jinja
+        return render_template('historie_vysledky.html', error='', form_data=[train_num, date_from, date_to],
+                               train_info=train_info, real_arrivals=real_arrivals, train_datetimes=train_datetimes)
 
 
 if __name__ == '__main__':
