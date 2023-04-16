@@ -11,20 +11,22 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ps-3">
-        <a class="navbar-brand" href="/">DelayTracker</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">Přehled zpoždění <span class="sr-only">(jste zde)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Historické zpoždění</a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ps-1 pe-1">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">DelayTracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Přehled zpoždění</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/historie">Historické zpoždění</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -43,14 +45,12 @@
         </div>
     </form>
 
-    <div class="container-fluid overflow-auto ps-3">
+    <div class="container-fluid overflow-auto ps-3 pb-3">
         {% if trains == [] %}
             <h3 style="color: red; font-weight: bold; margin-top: 10px;">Zadaným parametrům neodpovídá žádný vlak!</h3>
         {% endif %}
         {% for train in trains %}
-
             {% set train_carrier = train[3].split(',') %}
-
             {% if train[5] < 3 %}
                 {% set delay_color = 'green' %}
             {% elif train[5] < 10 %}
@@ -60,13 +60,11 @@
             {% else %}
                 {% set delay_color = 'purple' %}
             {% endif %}
-
             {% if loop.index0 % 2 == 1 %}
                 {% set bg_class = 'bg-body' %}
             {% else %}
                 {% set bg_class = 'bg-light' %}
             {% endif %}
-
             <div class="row {{ bg_class }} align-items-center" style="margin-top: 10px;">
                 <div class="col-sm">
                     <h3 class="train_name text-primary">{{ train_carrier[0] }}</h3>
