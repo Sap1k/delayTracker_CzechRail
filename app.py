@@ -99,6 +99,9 @@ scrape_task.add_job(data_fetcher, 'interval', minutes=1)
 scrape_task.start()
 
 app = Flask(__name__)
+# Strip whitespaces from Jinja generated HTML
+app.jinja_env.lstrip_blocks = True
+app.jinja_env.trim_blocks = True
 
 
 @app.route('/')
