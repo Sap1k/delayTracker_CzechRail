@@ -63,7 +63,7 @@
             {% if loop.index0 % 2 == 1 %}
                 {% set bg_class = 'bg-body' %}
             {% else %}
-                {% set bg_class = 'bg-light' %}
+                {% set bg_class = 'bg-body-tertiary' %}
             {% endif %}
             <div class="row {{ bg_class }} align-items-center" style="margin-top: 10px;">
                 <div class="col-sm">
@@ -74,12 +74,13 @@
                 <div class="col">
                     <p>Plánovaný příjezd: {{ train[6][11:16] }} // Skutečný: {{ real_arrivals[loop.index0] }}</p>
                     <p style="color: {{ delay_color }};">Zpoždění {{ train[5] }} minut</p>
+                    <a href="/historie?train_num={{ train[1] }}">Zobrazit zpoždění v posledních 14 dnech</a> <a style="outline: none;"> // </a>
                     <a href="{{ train[7] }}">Zobrazit detaily spoje</a>
                 </div>
             </div>
         {% endfor %}
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="/static/js/colorswap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
-
 </html>
