@@ -24,21 +24,16 @@ def create_connection(db_file):
 # Function to fetch data from the CzechRail database and put the relevant info in the db
 def data_fetcher():
     # Set API URL and set request details for past and future arrivals
-    API_URL = 'https://www.cd.cz/stanice/StaniceDetail.aspx/GetOPT'
-    API_REQ = {'sr70': 5453289,  # Station ID for Teplice v Čechách
-               'language': 'cs',  # Language, at a minimum en works too, didn't test further
-               'isDeep': False,  # If True, returns departures, not arrivals
-               'toHistory': False  # If True, returns trains departed in the last 24h
-               }
-    API_REQ_PAST = {'sr70': 5453289,  # Station ID for Teplice v Čechách
-                    'language': 'cs',  # Language, at a minimum en works too, didn't test further
-                    'isDeep': False,  # If True, returns departures, not arrivals
-                    'toHistory': True  # If True, returns trains departed in the last 24h
-                    }
+    API_URL = 'https://www.cd.cz/stanice/5453289/getopt' #the number is station id, in this care Teplice v Čechách
+    API_REQ = 'language=cs&isDeep=false&toHistory=false'
+    API_REQ_PAST = 'language=cs&isDeep=false&toHistory=true'
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    data = API_REQ
+    data_past = API_REQ_PAST
 
     # Fetches data from CzechRail API and puts it into one concise list
-    train_data_cur = requests.post(API_URL, json=API_REQ).json()['d']['Trains'][:10]
-    train_data_past = requests.post(API_URL, json=API_REQ_PAST).json()['d']['Trains'][-3:]
+    train_data_cur = requests.post(API_URL, headers=headers, data=data).json()['Trains'][:10]
+    train_data_past = requests.post(API_URL, headers=headers, data=data_past).json()['Trains'][-3:]
     train_data = train_data_past + train_data_cur
     # Sets current time at the time the request got back
     cur_time = datetime.now().strftime('%H:%M')
